@@ -1,6 +1,6 @@
 import * as yup from 'yup';
-import render from './render.js';
 import onChange from 'on-change';
+import render from './render.js';
 
 const validate = (link, collection) => {
   const schemaStr = yup.string().required().url().trim();
@@ -20,10 +20,10 @@ export default () => {
   };
 
   const state = {
-    formStatus: 'valid', 
-    rssLinks: [], 
-    feeds: [], 
-    posts: [], 
+    formStatus: 'valid',
+    rssLinks: [],
+    feeds: [],
+    posts: [],
     postsVisits: [],
   };
 
@@ -34,14 +34,12 @@ export default () => {
     const formData = new FormData(e.target);
     const url = formData.get('url');
     validate(url, state.rssLinks)
-    .then(() => {
-      watchedState.rssLinks.push(url);
-      watchedState.error = '';
-      watchedState.formStatus = 'success';
-    })
-    .catch(() => {
-      watchedState.formStatus = 'invalid';
-    })
+      .then(() => {
+        watchedState.rssLinks.push(url);
+        watchedState.error = '';
+        watchedState.formStatus = 'valid';
+      }).catch(() => {
+        watchedState.formStatus = 'invalid';
+      });
   });
 };
-

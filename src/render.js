@@ -1,4 +1,4 @@
-export default (state, elements) =>  (path, value) => {
+export default (state, elements) => (path, value) => {
   const { input, feedback } = elements;
 
   if (path === 'formStatus') {
