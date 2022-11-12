@@ -29,7 +29,7 @@ export default () => {
   };
 
   const state = {
-    formStatus: 'valid',
+    formStatus: true,
     rssLinks: [],
     feeds: [],
     posts: [],
