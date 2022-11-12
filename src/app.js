@@ -1,5 +1,7 @@
 import * as yup from 'yup';
 import onChange from 'on-change';
+import i18n from 'i18next';
+import resources from './locales/index.js';
 import render from './render.js';
 
 const validate = (link, collection) => {
@@ -10,6 +12,13 @@ const validate = (link, collection) => {
 };
 
 export default () => {
+  const i18next = i18n.createInstance();
+  i18next.init({
+    lng: 'ru',
+    debug: true,
+    resources,
+  });
+
   const elements = {
     form: document.querySelector('form'),
     input: document.querySelector('#url-input'),
@@ -27,7 +36,7 @@ export default () => {
     postsVisits: [],
   };
 
-  const watchedState = onChange(state, render(state, elements));
+  const watchedState = onChange(state, render(state, elements, i18next));
 
   elements.form.addEventListener('submit', (e) => {
     e.preventDefault();
@@ -38,8 +47,9 @@ export default () => {
         watchedState.rssLinks.push(url);
         watchedState.error = '';
         watchedState.formStatus = 'valid';
-      }).catch(() => {
+      }).catch((err) => {
         watchedState.formStatus = 'invalid';
+        watchedState.error = err.type ?? err.message.toLowerCase();
       });
   });
 };

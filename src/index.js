@@ -1,4 +1,4 @@
 import './styles.scss';
-import app from './model.js';
+import app from './app.js';
 
 app();
