@@ -34,6 +34,7 @@ export default () => {
     feeds: [],
     posts: [],
     postsVisits: [],
+    error: '',
   };
 
   const watchedState = onChange(state, render(state, elements, i18next));
@@ -48,8 +49,8 @@ export default () => {
         watchedState.error = '';
         watchedState.formStatus = 'valid';
       }).catch((err) => {
-        watchedState.formStatus = 'invalid';
         watchedState.error = err.type ?? err.message.toLowerCase();
+        watchedState.formStatus = 'invalid';
       });
   });
 };

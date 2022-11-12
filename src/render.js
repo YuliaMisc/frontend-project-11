@@ -10,8 +10,6 @@ const renderFormSuccess = (elements, i18n) => {
 
 const renderFormError = (state, elements, i18n) => {
   const { input, feedback } = elements;
-  console.log(state.error);
-  console.log(state);
   input.classList.add('is-invalid');
   feedback.classList.remove('text-success');
   feedback.classList.add('text-danger');
