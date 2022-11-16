@@ -44,5 +44,6 @@ export const renderModalContent = (state, elements, i18n) => {
   buttonCloseRead.textContent = i18n.t('modal.close');
 
   const postElem = document.querySelector(`[data-id="${currentPost.postId}"]`);
-  postElem.classList.replace('fw-bold', 'fw-normal');
+  postElem.classList.remove('fw-bold');
+  postElem.classList.add('fw-normal', 'link-secondary');
 };

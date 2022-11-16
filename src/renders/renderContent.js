@@ -14,6 +14,7 @@ const renderFeeds = (state, i18n) => {
 
   feeds.forEach((feed) => {
     const liEl = document.createElement('li');
+    liEl.classList.add('list-group-item', 'border-0', 'border-end-0');
     const feedTitle = document.createElement('h3');
     const feedDescr = document.createElement('p');
 
@@ -38,7 +39,7 @@ const renderPosts = (state, i18n) => {
 
   const postEl = document.createElement('div');
   postEl.classList.add('card-body');
-  postEl.innerHTML = `<h2 class="card-title h4">${i18n.t('feeds')}</h2>`;
+  postEl.innerHTML = `<h2 class="card-title h4">${i18n.t('posts')}</h2>`;
   postsListEl.append(postEl);
 
   const ulEl = document.createElement('ul');
@@ -56,9 +57,9 @@ const renderPosts = (state, i18n) => {
       .find((postVisit) => postVisit.postId === post.postId);
 
     if (targetPostVisit.visited) {
-      postTitle.setAttribute('class', 'fw-normal');
+      postTitle.classList.add('fw-normal', 'link-secondary');
     } else {
-      postTitle.setAttribute('class', 'fw-bold');
+      postTitle.classList.add('fw-bold');
     }
 
     postTitle.setAttribute('href', `${post.postLink}`);
@@ -85,6 +86,8 @@ const renderPosts = (state, i18n) => {
 
 const renderContent = (state, elements, i18n) => {
   const { feedsContainer, postsContainer } = elements;
+  feedsContainer.replaceChildren();
+  postsContainer.replaceChildren()
   const feeds = renderFeeds(state, i18n);
   const posts = renderPosts(state, i18n);
   feedsContainer.append(feeds);
