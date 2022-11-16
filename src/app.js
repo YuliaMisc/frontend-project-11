@@ -2,7 +2,7 @@ import onChange from 'on-change';
 import i18n from 'i18next';
 import uniqueId from 'lodash/uniqueId.js';
 import resources from './locales/index.js';
-import render from './render.js';
+import render from './renders/render.js';
 import validate from './validate.js';
 import getData from './getData.js';
 import parse from './parse.js';
@@ -16,20 +16,33 @@ export default () => {
   });
 
   const elements = {
+    body: document.querySelector('body'),
     form: document.querySelector('form'),
     input: document.querySelector('#url-input'),
+    submitButton: document.querySelector('[type="submit"]'),
     feedback: document.querySelector('.feedback'),
     postsContainer: document.querySelector('.posts'),
     feedsContainer: document.querySelector('.feeds'),
-    modal: document.querySelector('.modal'),
+    modal: {
+      modal: document.querySelector('.modal'),
+      modalTitle: document.querySelector('.modal-title'),
+      modalDescr: document.querySelector('.modal-body'),
+      modalRead: document.querySelector('.modal-read'),
+      modalClose: {
+        buttonClose: document.querySelector('.close'),
+        buttonCloseRead: document.querySelector('.btn-secondary'),
+      },
+    },
   };
 
   const state = {
     formStatus: 'filling',
+    modalStatus: 'closed',
     rssLinks: [],
     feeds: [],
     posts: [],
     postsVisits: [],
+    idCurrentOpenWindow: '',
     error: '',
   };
 
@@ -47,11 +60,13 @@ export default () => {
       watchedState.posts.push({
         postTitle, postDescr, postLink, feedId, postId,
       });
+      watchedState.postsVisits.push({ postId, visited: false });
     });
   };
 
   elements.form.addEventListener('submit', (e) => {
     e.preventDefault();
+    watchedState.formStatus = 'sending';
     const formData = new FormData(e.target);
     const url = formData.get('url');
     validate(url, state.rssLinks)
@@ -61,10 +76,26 @@ export default () => {
         addRss(parsedRss, url);
         watchedState.rssLinks.push(url);
         watchedState.error = '';
-        watchedState.formStatus = 'sending';
+        watchedState.formStatus = 'finished';
       }).catch((err) => {
         watchedState.error = err.type ?? err.message.toLowerCase();
         watchedState.formStatus = 'failed';
       });
+  });
+
+  elements.postsContainer.addEventListener('click', (event) => {
+    const { id } = event.target.dataset;
+    const currentPost = state.postsVisits.find((post) => post.postId === id);
+    currentPost.visited = true;
+    watchedState.idCurrentOpenWindow = id;
+    watchedState.modalStatus = 'open';
+  });
+
+  elements.modal.modalClose.buttonClose.addEventListener('click', () => {
+    watchedState.modalStatus = 'close';
+  });
+
+  elements.modal.modalClose.buttonCloseRead.addEventListener('click', () => {
+    watchedState.modalStatus = 'close';
   });
 };

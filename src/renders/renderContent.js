@@ -1,11 +1,11 @@
-const renderFeeds = (state) => {
+const renderFeeds = (state, i18n) => {
   const { feeds } = state;
   const feedListEl = document.createElement('div');
   feedListEl.classList.add('card', 'border-0');
 
   const feedEl = document.createElement('div');
   feedEl.classList.add('card-body');
-  feedEl.innerHTML = '<h2 class="card-title h4">Фиды</h2>';
+  feedEl.innerHTML = `<h2 class="card-title h4">${i18n.t('feeds')}</h2>`;
   feedListEl.append(feedEl);
 
   const ulEl = document.createElement('ul');
@@ -31,14 +31,14 @@ const renderFeeds = (state) => {
   return feedListEl;
 };
 
-const renderPosts = (state) => {
+const renderPosts = (state, i18n) => {
   const { posts } = state;
   const postsListEl = document.createElement('div');
   postsListEl.classList.add('card', 'border-0');
 
   const postEl = document.createElement('div');
   postEl.classList.add('card-body');
-  postEl.innerHTML = '<h2 class="card-title h4">Посты</h2>';
+  postEl.innerHTML = `<h2 class="card-title h4">${i18n.t('feeds')}</h2>`;
   postsListEl.append(postEl);
 
   const ulEl = document.createElement('ul');
@@ -52,7 +52,15 @@ const renderPosts = (state) => {
 
     liEl.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-start', 'border-0', 'border-end-0');
 
-    postTitle.classList.add('fw-blod');
+    const targetPostVisit = state.postsVisits.flat()
+      .find((postVisit) => postVisit.postId === post.postId);
+
+    if (targetPostVisit.visited) {
+      postTitle.setAttribute('class', 'fw-normal');
+    } else {
+      postTitle.setAttribute('class', 'fw-bold');
+    }
+
     postTitle.setAttribute('href', `${post.postLink}`);
     postTitle.setAttribute('data-id', `${post.postId}`);
     postTitle.setAttribute('target', '_blank');
@@ -65,7 +73,7 @@ const renderPosts = (state) => {
     postButton.setAttribute('data-bs-target', '#modal');
 
     postTitle.textContent = post.postTitle;
-    postButton.textContent = 'Просмотр';
+    postButton.textContent = i18n.t('postButtonRead');
 
     liEl.append(postTitle);
     liEl.append(postButton);
@@ -75,63 +83,12 @@ const renderPosts = (state) => {
   return postsListEl;
 };
 
-const renderFormSuccess = (elements, i18n) => {
-  const { input, form, feedback } = elements;
-  input.classList.remove('is-invalid');
-  feedback.classList.remove('text-danger');
-  feedback.classList.add('text-success');
-  feedback.textContent = i18n.t('feedback.success');
-  form.reset();
-  input.focus();
-};
-
-const renderContent = (state, elements) => {
+const renderContent = (state, elements, i18n) => {
   const { feedsContainer, postsContainer } = elements;
-  const feeds = renderFeeds(state);
-  const posts = renderPosts(state);
+  const feeds = renderFeeds(state, i18n);
+  const posts = renderPosts(state, i18n);
   feedsContainer.append(feeds);
   postsContainer.append(posts);
 };
 
-const renderFormError = (state, elements, i18n) => {
-  const { input, feedback } = elements;
-  input.classList.add('is-invalid');
-  feedback.classList.remove('text-success');
-  feedback.classList.add('text-danger');
-  switch (state.error) {
-    case 'url':
-      feedback.textContent = i18n.t('feedback.invalidUrl');
-      break;
-    case 'required':
-      feedback.textContent = i18n.t('feedback.invalidRequired');
-      break;
-    case 'notOneOf':
-      feedback.textContent = i18n.t('feedback.invalidNotOneOf');
-      break;
-    case 'network error':
-      feedback.textContent = i18n.t('feedback.invalidNetwork');
-      break;
-    case 'invalid rss':
-      feedback.textContent = i18n.t('feedback.invalidRSS');
-      break;
-    default:
-      feedback.textContent = i18n.t('feedback.invalidUnknown');
-  }
-};
-
-export default (state, elements, i18n) => (path, value) => {
-  if (path === 'formStatus') {
-    switch (value) {
-      case 'sending':
-        renderFormSuccess(elements, i18n);
-        renderContent(state, elements);
-        break;
-      case 'failed':
-        renderFormError(state, elements, i18n);
-        break;
-      default:
-        throw new Error(`Unknown state: ${value}`);
-    }
-  }
-  return state;
-};
+export default renderContent;
