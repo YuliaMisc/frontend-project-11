@@ -1,5 +1,11 @@
 const renderFormSuccess = (elements, i18n) => {
-  const { input, form, feedback } = elements;
+  const {
+    input,
+    form,
+    feedback,
+    submitButton,
+  } = elements;
+  submitButton.disabled = false;
   input.classList.remove('is-invalid');
   feedback.classList.remove('text-danger');
   feedback.classList.add('text-success');

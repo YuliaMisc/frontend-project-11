@@ -53,10 +53,7 @@ const renderPosts = (state, i18n) => {
 
     liEl.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-start', 'border-0', 'border-end-0');
 
-    const targetPostVisit = state.postsVisits.flat()
-      .find((postVisit) => postVisit.postId === post.postId);
-
-    if (targetPostVisit.visited) {
+    if (state.postsVisits.includes(post.postId)) {
       postTitle.classList.add('fw-normal', 'link-secondary');
     } else {
       postTitle.classList.add('fw-bold');
@@ -92,6 +89,7 @@ const renderContent = (state, elements, i18n) => {
   const posts = renderPosts(state, i18n);
   feedsContainer.append(feeds);
   postsContainer.append(posts);
+  return state;
 };
 
 export default renderContent;

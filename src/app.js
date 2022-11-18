@@ -62,9 +62,6 @@ export default () => {
             return !collPostsLinks.includes(post.postLink);
           });
 
-          if (newPosts.length === 0) {
-            return;
-          }
           newPosts.forEach((post) => {
             post.postId = uniqueId();
             post.feedId = feed.id;
@@ -97,7 +94,6 @@ export default () => {
       watchedState.posts.push({
         postTitle, postDescr, postLink, feedId, postId,
       });
-      watchedState.postsVisits.push({ postId, visited: false });
     });
   };
 
@@ -111,20 +107,19 @@ export default () => {
       .then((rss) => {
         const parsedRss = parse(rss.data.contents);
         addRss(parsedRss, url);
-        watchedState.rssLinks.push(url);
-        watchedState.error = '';
+        state.rssLinks.push(url);
+        state.error = '';
         watchedState.formStatus = 'finished';
       }).catch((err) => {
-        watchedState.error = err.type ?? err.message.toLowerCase();
+        state.error = err.type ?? err.message.toLowerCase();
         watchedState.formStatus = 'failed';
       });
   });
 
   elements.postsContainer.addEventListener('click', (event) => {
     const { id } = event.target.dataset;
-    const currentPost = state.postsVisits.find((post) => post.postId === id);
-    currentPost.visited = true;
-    watchedState.idCurrentOpenWindow = id;
+    state.postsVisits.push(id);
+    state.idCurrentOpenWindow = id;
     watchedState.modalStatus = 'open';
   });
 

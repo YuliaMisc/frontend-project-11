@@ -1,5 +1,6 @@
 const renderFormError = (state, elements, i18n) => {
-  const { input, feedback } = elements;
+  const { input, feedback, submitButton } = elements;
+  submitButton.disabled = false;
   input.classList.add('is-invalid');
   feedback.classList.remove('text-success');
   feedback.classList.add('text-danger');

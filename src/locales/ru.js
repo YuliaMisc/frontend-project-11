@@ -8,8 +8,7 @@ export default {
         invalidNotOneOf: 'RSS уже существует',
         invalidUnknown: 'Возникла неизвестная ошибка. Попробуйте еще раз',
         invalidRSS: 'Ресурс не содержит валидный RSS',
-        invalidNetwork: 'Не корректный ответ сервера. Попробуйте ещё раз.',
-        tooManyRequests: 'Сервер перегружен. Попробуйте позже.',
+        invalidNetwork: 'Ошибка сети',
       },
       modal: {
         read: 'Читать полностью',
