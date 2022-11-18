@@ -3,7 +3,7 @@ const parse = (data) => {
   const doc = parser.parseFromString(data, 'application/xml');
 
   if (doc.querySelector('parsererror')) {
-    throw new Error('network error');
+    throw new Error('invalid rss');
   }
 
   const feedTitle = doc.querySelector('title').textContent;
