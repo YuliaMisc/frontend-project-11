@@ -7,6 +7,8 @@ import validate from './validate.js';
 import getData from './getData.js';
 import parse from './parse.js';
 
+const TIMER = 5000;
+
 export default () => {
   const i18next = i18n.createInstance();
   i18next.init({
@@ -47,6 +49,41 @@ export default () => {
   };
 
   const watchedState = onChange(state, render(state, elements, i18next));
+
+  const updatePosts = () => {
+    const promises = state.rssLinks.map((url) => {
+      getData(url)
+        .then((rss) => {
+          const updatingFeed = state.feeds.find((feed) => feed.rssLinks === url);
+          const { feed, posts } = parse(rss.data.contents);
+          feed.id = updatingFeed.id;
+          const newPosts = posts.filter((post) => {
+            const collPostsLinks = state.posts.map((postInState) => postInState.postLink);
+            return !collPostsLinks.includes(post.postLink);
+          });
+
+          if (newPosts.length === 0) {
+            return;
+          }
+          newPosts.forEach((post) => {
+            post.postId = uniqueId();
+            post.feedId = feed.id;
+          });
+          watchedState.posts = [...state.posts, ...newPosts];
+        })
+        .catch((error) => {
+          throw new Error(`Ошибка при обновлении фида: ${url}`, error);
+        });
+      return state;
+    });
+    Promise.all(promises)
+      .then(setTimeout(() => {
+        updatePosts();
+      }, TIMER))
+      .catch((error) => {
+        throw new Error(error);
+      });
+  };
 
   const addRss = (parsedRss, link) => {
     const { feed, posts } = parsedRss;
@@ -98,4 +135,5 @@ export default () => {
   elements.modal.modalClose.buttonCloseRead.addEventListener('click', () => {
     watchedState.modalStatus = 'close';
   });
+  updatePosts();
 };
