@@ -7,8 +7,6 @@ import validate from './validate.js';
 import getData from './getData.js';
 import parse from './parse.js';
 
-const TIMER = 5000;
-
 export default () => {
   const i18next = i18n.createInstance();
   i18next.init({
@@ -76,7 +74,7 @@ export default () => {
     Promise.all(promises)
       .then(setTimeout(() => {
         updatePosts();
-      }, TIMER))
+      }, 5000))
       .catch((error) => {
         throw new Error(error);
       });
