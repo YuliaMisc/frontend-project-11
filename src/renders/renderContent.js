@@ -1,4 +1,4 @@
-const renderFeeds = (state, i18n) => {
+const getFeeds = (state, i18n) => {
   const { feeds } = state;
   const feedListEl = document.createElement('div');
   feedListEl.classList.add('card', 'border-0');
@@ -32,7 +32,7 @@ const renderFeeds = (state, i18n) => {
   return feedListEl;
 };
 
-const renderPosts = (state, i18n) => {
+const getPosts = (state, i18n) => {
   const { posts } = state;
   const postsListEl = document.createElement('div');
   postsListEl.classList.add('card', 'border-0');
@@ -85,11 +85,10 @@ const renderContent = (state, elements, i18n) => {
   const { feedsContainer, postsContainer } = elements;
   feedsContainer.replaceChildren();
   postsContainer.replaceChildren();
-  const feedsList = renderFeeds(state, i18n);
-  const postsList = renderPosts(state, i18n);
-  feedsContainer.append(feedsList);
-  postsContainer.append(postsList);
-  return state;
+  const feeds = getFeeds(state, i18n);
+  const posts = getPosts(state, i18n);
+  feedsContainer.append(feeds);
+  postsContainer.append(posts);
 };
 
 export default renderContent;
