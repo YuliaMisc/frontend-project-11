@@ -12,8 +12,6 @@
 ![[example workflow]](https://github.com/YuliaMisc/frontend-project-11/actions/workflows/nodejs.yml/badge.svg)
 
 <h3>Installation:</h3>
-<ul>
-  <li>git clone git@github.com:YuliaMisc/frontend-project-11.git</li>
-  <li>cd frontend-project-11<li>
-  <li>make install</li>
-</ul>
+ - git clone git@github.com:YuliaMisc/frontend-project-11.git
+ - cd frontend-project-11
+ - make install
