@@ -85,10 +85,10 @@ const renderContent = (state, elements, i18n) => {
   const { feedsContainer, postsContainer } = elements;
   feedsContainer.replaceChildren();
   postsContainer.replaceChildren();
-  const feeds = renderFeeds(state, i18n);
-  const posts = renderPosts(state, i18n);
-  feedsContainer.append(feeds);
-  postsContainer.append(posts);
+  const feedsList = renderFeeds(state, i18n);
+  const postsList = renderPosts(state, i18n);
+  feedsContainer.append(feedsList);
+  postsContainer.append(postsList);
   return state;
 };
 
