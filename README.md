@@ -1,6 +1,6 @@
 <h1>RSS Reader</h1>
 <h3>Description:</h3>
-<p>Rss Reader is a service for aggregating RSS feeds, with which it is convenient to read various sources, such as blogs. It allows you to add an unlimited number of RSS feeds, updates them itself and adds new entries to the general feed.</p>
+<p>"RSS Reader" is a service for aggregating RSS feeds. It provides a convenient way to read various sources such as blogs. It allows you to add an unlimited number of RSS feeds, updates them and adds new entries to main feed.</p>
 
 [Link to application on Vercel](https://frontend-project-11-beige.vercel.app/)
 
