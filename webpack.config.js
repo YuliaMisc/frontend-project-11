@@ -3,6 +3,7 @@
 import path, { dirname } from 'path';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import { fileURLToPath } from 'url';
+import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 
 const filename = fileURLToPath(import.meta.url);
 const dirName = dirname(filename);
@@ -19,6 +20,7 @@ const config = {
     host: 'localhost',
   },
   plugins: [
+    new MiniCssExtractPlugin(),
     new HtmlWebpackPlugin({
       template: 'index.html',
     }),
@@ -38,15 +40,14 @@ const config = {
       },
       {
         test: /\.(scss)$/,
-        use: [{
-          loader: 'style-loader', // inject CSS to page
-        }, {
-          loader: 'css-loader', // translates CSS into CommonJS modules
-        }, {
-          loader: 'postcss-loader', // Run post css actions
-        }, {
-          loader: 'sass-loader', // compiles Sass to CSS
-        }],
+        use: [MiniCssExtractPlugin.loader,
+          {
+            loader: 'css-loader', // translates CSS into CommonJS modules
+          }, {
+            loader: 'postcss-loader', // Run post css actions
+          }, {
+            loader: 'sass-loader', // compiles Sass to CSS
+          }],
       },
 
     // Add your rules for custom modules here

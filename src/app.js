@@ -1,11 +1,18 @@
 import onChange from 'on-change';
+import * as yup from 'yup';
 import i18n from 'i18next';
 import uniqueId from 'lodash/uniqueId.js';
 import resources from './locales/index.js';
 import render from './renders/render.js';
-import validate from './validate.js';
 import getData from './getData.js';
 import parse from './parse.js';
+
+const validate = (link, collection) => {
+  const schemaStr = yup.string().required().url().trim();
+  const schemaMix = yup.mixed().notOneOf(collection);
+  return schemaStr.validate(link)
+    .then((url) => schemaMix.validate(url));
+};
 
 export default () => {
   const i18next = i18n.createInstance();
@@ -37,7 +44,6 @@ export default () => {
 
   const state = {
     formStatus: 'filling',
-    modalStatus: 'closed',
     rssLinks: [],
     feeds: [],
     posts: [],
@@ -67,17 +73,14 @@ export default () => {
           watchedState.posts = [...state.posts, ...newPosts];
         })
         .catch((error) => {
-          throw new Error(`Ошибка при обновлении фида: ${url}`, error);
+          console.log(`Error: ${error.message}`);
         });
       return state;
     });
     Promise.all(promises)
-      .then(setTimeout(() => {
+      .finally(setTimeout(() => {
         updatePosts();
-      }, 5000))
-      .catch((error) => {
-        throw new Error(error);
-      });
+      }, 5000));
   };
 
   const addRss = (parsedRss, link) => {
@@ -116,17 +119,9 @@ export default () => {
 
   elements.postsContainer.addEventListener('click', (event) => {
     const { id } = event.target.dataset;
-    state.postsVisits.push(id);
     state.idCurrentOpenWindow = id;
-    watchedState.modalStatus = 'open';
+    watchedState.postsVisits.push(id);
   });
 
-  elements.modal.modalClose.buttonClose.addEventListener('click', () => {
-    watchedState.modalStatus = 'close';
-  });
-
-  elements.modal.modalClose.buttonCloseRead.addEventListener('click', () => {
-    watchedState.modalStatus = 'close';
-  });
   updatePosts();
 };

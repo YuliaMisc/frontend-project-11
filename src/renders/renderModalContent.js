@@ -1,38 +1,4 @@
-export const renderModalOpen = (elements) => {
-  const { body } = elements;
-  const { modal } = elements.modal;
-
-  const divEl = document.createElement('div');
-  divEl.classList.add('modal-backdrop', 'fade', 'show');
-
-  body.classList.add('modal-open');
-  body.setAttribute('style', 'overflow: hidden; padding-right: 15px;');
-  body.append(divEl);
-
-  modal.classList.add('show');
-  modal.setAttribute('style', 'display: block;');
-  modal.setAttribute('aria-modal', 'true');
-  modal.removeAttribute('aria-hidden');
-  modal.setAttribute('role', 'dialog');
-};
-
-export const renderModalClose = (elements) => {
-  const { body } = elements;
-  const { modal } = elements.modal;
-
-  const divEl = document.querySelector('.modal-backdrop');
-  divEl.remove();
-
-  body.classList.remove('modal-open');
-  body.setAttribute('style', '');
-  modal.classList.remove('show');
-  modal.setAttribute('style', 'display: none');
-  modal.setAttribute('aria-hidden', 'true');
-  modal.removeAttribute('aria-modal');
-  modal.removeAttribute('role');
-};
-
-export const renderModalContent = (state, elements, i18n) => {
+const renderModalContent = (state, elements, i18n) => {
   const { modalTitle, modalDescr, modalRead } = elements.modal;
   const { buttonCloseRead } = elements.modal.modalClose;
 
@@ -47,3 +13,5 @@ export const renderModalContent = (state, elements, i18n) => {
   postElem.classList.remove('fw-bold');
   postElem.classList.add('fw-normal', 'link-secondary');
 };
+
+export default renderModalContent;
