@@ -4,7 +4,7 @@ const renderFormError = (state, elements, i18n) => {
   input.classList.add('is-invalid');
   feedback.classList.remove('text-success');
   feedback.classList.add('text-danger');
-  switch (state.error) {
+  switch (state.form.error) {
     case 'url':
       feedback.textContent = i18n.t('feedback.invalidUrl');
       break;

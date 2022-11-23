@@ -1,11 +1,13 @@
 import onChange from 'on-change';
 import * as yup from 'yup';
 import i18n from 'i18next';
+import axios from 'axios';
 import uniqueId from 'lodash/uniqueId.js';
 import resources from './locales/index.js';
 import render from './renders/render.js';
-import getData from './getData.js';
 import parse from './parse.js';
+
+const getData = (url) => axios.get(`https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(url)}`);
 
 const validate = (link, collection) => {
   const schemaStr = yup.string().required().url().trim();
@@ -14,114 +16,113 @@ const validate = (link, collection) => {
     .then((url) => schemaMix.validate(url));
 };
 
+const updatePosts = (watchedState) => {
+  const promises = watchedState.feeds.map((feed) => {
+    getData(feed.url)
+      .then((rss) => {
+        const { posts } = parse(rss.data.contents);
+        const newPosts = posts.filter((post) => {
+          const collPostsLinks = watchedState.posts.map((postInState) => postInState.postLink);
+          return !collPostsLinks.includes(post.postLink);
+        });
+
+        newPosts.forEach((post) => {
+          post.postId = uniqueId();
+          post.feedId = feed.id;
+        });
+        watchedState.posts = [...watchedState.posts, ...newPosts];
+      })
+      .catch((error) => {
+        console.log(`Error: ${error.message}`);
+      });
+    return watchedState;
+  });
+  Promise.all(promises)
+    .finally(() => setTimeout(() => {
+      updatePosts(watchedState);
+    }, 5000));
+};
+
 export default () => {
   const i18next = i18n.createInstance();
   i18next.init({
     lng: 'ru',
     debug: true,
     resources,
-  });
+  })
+    .then(() => {
+      const elements = {
+        body: document.querySelector('body'),
+        form: document.querySelector('form'),
+        input: document.querySelector('#url-input'),
+        submitButton: document.querySelector('[type="submit"]'),
+        feedback: document.querySelector('.feedback'),
+        postsContainer: document.querySelector('.posts'),
+        feedsContainer: document.querySelector('.feeds'),
+        modal: {
+          modal: document.querySelector('.modal'),
+          modalTitle: document.querySelector('.modal-title'),
+          modalDescr: document.querySelector('.modal-body'),
+          modalRead: document.querySelector('.modal-read'),
+          modalClose: {
+            buttonClose: document.querySelector('.close'),
+            buttonCloseRead: document.querySelector('.btn-secondary'),
+          },
+        },
+      };
 
-  const elements = {
-    body: document.querySelector('body'),
-    form: document.querySelector('form'),
-    input: document.querySelector('#url-input'),
-    submitButton: document.querySelector('[type="submit"]'),
-    feedback: document.querySelector('.feedback'),
-    postsContainer: document.querySelector('.posts'),
-    feedsContainer: document.querySelector('.feeds'),
-    modal: {
-      modal: document.querySelector('.modal'),
-      modalTitle: document.querySelector('.modal-title'),
-      modalDescr: document.querySelector('.modal-body'),
-      modalRead: document.querySelector('.modal-read'),
-      modalClose: {
-        buttonClose: document.querySelector('.close'),
-        buttonCloseRead: document.querySelector('.btn-secondary'),
-      },
-    },
-  };
+      const initialState = {
+        form: {
+          status: 'filling',
+          error: '',
+        },
+        feeds: [],
+        posts: [],
+        postsVisits: [],
+        idCurrentOpenWindow: '',
+      };
 
-  const state = {
-    formStatus: 'filling',
-    rssLinks: [],
-    feeds: [],
-    posts: [],
-    postsVisits: [],
-    idCurrentOpenWindow: '',
-    error: '',
-  };
+      const watchedState = onChange(initialState, render(initialState, elements, i18next));
+      updatePosts(watchedState);
 
-  const watchedState = onChange(state, render(state, elements, i18next));
-
-  const updatePosts = () => {
-    const promises = state.rssLinks.map((url) => {
-      getData(url)
-        .then((rss) => {
-          const updatingFeed = state.feeds.find((feed) => feed.rssLinks === url);
-          const { feed, posts } = parse(rss.data.contents);
-          feed.id = updatingFeed.id;
-          const newPosts = posts.filter((post) => {
-            const collPostsLinks = state.posts.map((postInState) => postInState.postLink);
-            return !collPostsLinks.includes(post.postLink);
+      const addRss = (parsedRss, link) => {
+        const { feed, posts } = parsedRss;
+        feed.id = uniqueId();
+        feed.url = link;
+        watchedState.feeds.push(feed);
+        posts.forEach((post) => {
+          const feedId = feed.id;
+          const postId = uniqueId();
+          const { postTitle, postDescr, postLink } = post;
+          watchedState.posts.push({
+            postTitle, postDescr, postLink, feedId, postId,
           });
-
-          newPosts.forEach((post) => {
-            post.postId = uniqueId();
-            post.feedId = feed.id;
-          });
-          watchedState.posts = [...state.posts, ...newPosts];
-        })
-        .catch((error) => {
-          console.log(`Error: ${error.message}`);
         });
-      return state;
-    });
-    Promise.all(promises)
-      .finally(setTimeout(() => {
-        updatePosts();
-      }, 5000));
-  };
+      };
 
-  const addRss = (parsedRss, link) => {
-    const { feed, posts } = parsedRss;
-    feed.id = uniqueId();
-    feed.rssLinks = link;
-    watchedState.feeds.push(feed);
-    posts.forEach((post) => {
-      const feedId = feed.id;
-      const postId = uniqueId();
-      const { postTitle, postDescr, postLink } = post;
-      watchedState.posts.push({
-        postTitle, postDescr, postLink, feedId, postId,
+      elements.form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        watchedState.form.status = 'sending';
+        const formData = new FormData(e.target);
+        const url = formData.get('url');
+        const rssLinks = initialState.feeds.map((feed) => feed.url);
+        validate(url, rssLinks)
+          .then((validUrl) => getData(validUrl))
+          .then((rss) => {
+            const parsedRss = parse(rss.data.contents);
+            addRss(parsedRss, url);
+            initialState.form.error = '';
+            watchedState.form.status = 'finished';
+          }).catch((err) => {
+            initialState.form.error = err.type ?? err.message.toLowerCase();
+            watchedState.form.status = 'failed';
+          });
+      });
+
+      elements.postsContainer.addEventListener('click', (event) => {
+        const { id } = event.target.dataset;
+        watchedState.idCurrentOpenWindow = id;
+        watchedState.postsVisits.push(id);
       });
     });
-  };
-
-  elements.form.addEventListener('submit', (e) => {
-    e.preventDefault();
-    watchedState.formStatus = 'sending';
-    const formData = new FormData(e.target);
-    const url = formData.get('url');
-    validate(url, state.rssLinks)
-      .then((validUrl) => getData(validUrl))
-      .then((rss) => {
-        const parsedRss = parse(rss.data.contents);
-        addRss(parsedRss, url);
-        state.rssLinks.push(url);
-        state.error = '';
-        watchedState.formStatus = 'finished';
-      }).catch((err) => {
-        state.error = err.type ?? err.message.toLowerCase();
-        watchedState.formStatus = 'failed';
-      });
-  });
-
-  elements.postsContainer.addEventListener('click', (event) => {
-    const { id } = event.target.dataset;
-    state.idCurrentOpenWindow = id;
-    watchedState.postsVisits.push(id);
-  });
-
-  updatePosts();
 };

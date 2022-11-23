@@ -8,10 +8,6 @@ const renderModalContent = (state, elements, i18n) => {
   modalRead.setAttribute('href', `${currentPost.postLink}`);
   modalRead.textContent = i18n.t('modal.read');
   buttonCloseRead.textContent = i18n.t('modal.close');
-
-  const postElem = document.querySelector(`[data-id="${currentPost.postId}"]`);
-  postElem.classList.remove('fw-bold');
-  postElem.classList.add('fw-normal', 'link-secondary');
 };
 
 export default renderModalContent;

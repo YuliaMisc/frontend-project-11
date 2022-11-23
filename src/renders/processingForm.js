@@ -2,7 +2,7 @@ import renderFormSuccess from './renderFormSuccess.js';
 import renderFormError from './renderFormError.js';
 
 const processingForm = (state, elements, i18n) => {
-  switch (state.formStatus) {
+  switch (state.form.status) {
     case 'sending':
       elements.submitButton.disabled = true;
       break;

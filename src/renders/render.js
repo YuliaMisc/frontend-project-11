@@ -4,14 +4,17 @@ import renderModalContent from './renderModalContent.js';
 
 export default (state, elements, i18n) => (path) => {
   switch (path) {
-    case 'formStatus':
+    case 'form.status':
       processingForm(state, elements, i18n);
       break;
-    case 'postsVisits':
+    case 'idCurrentOpenWindow':
       renderModalContent(state, elements, i18n);
       break;
     case 'feeds':
     case 'posts':
+      renderContent(state, elements, i18n);
+      break;
+    case 'postsVisits':
       renderContent(state, elements, i18n);
       break;
     default:
