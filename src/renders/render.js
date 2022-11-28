@@ -1,13 +1,14 @@
 import renderContent from './renderContent.js';
-import processingForm from './processingForm.js';
+import renderForm from './renderForm.js';
 import renderModalContent from './renderModalContent.js';
 
 export default (state, elements, i18n) => (path) => {
   switch (path) {
     case 'form.status':
-      processingForm(state, elements, i18n);
+    case 'form.error':  
+      renderForm(state, elements, i18n);
       break;
-    case 'idCurrentOpenWindow':
+    case 'modalPostId':
       renderModalContent(state, elements, i18n);
       break;
     case 'feeds':

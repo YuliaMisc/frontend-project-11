@@ -79,23 +79,23 @@ export default () => {
         feeds: [],
         posts: [],
         postsVisits: [],
-        idCurrentOpenWindow: '',
+        modalPostId: '',
       };
 
       const watchedState = onChange(initialState, render(initialState, elements, i18next));
       updatePosts(watchedState);
 
-      const addRss = (parsedRss, link) => {
+      const addRss = (parsedRss, url) => {
         const { feed, posts } = parsedRss;
         feed.id = uniqueId();
-        feed.url = link;
+        feed.url = url;
         watchedState.feeds.push(feed);
         posts.forEach((post) => {
           const feedId = feed.id;
           const postId = uniqueId();
-          const { postTitle, postDescr, postLink } = post;
+          const { title, description, link } = post;
           watchedState.posts.push({
-            postTitle, postDescr, postLink, feedId, postId,
+            title, description, link, feedId, postId,
           });
         });
       };
@@ -105,23 +105,23 @@ export default () => {
         watchedState.form.status = 'sending';
         const formData = new FormData(e.target);
         const url = formData.get('url');
-        const rssLinks = initialState.feeds.map((feed) => feed.url);
+        const rssLinks = watchedState.feeds.map((feed) => feed.url);
         validate(url, rssLinks)
           .then((validUrl) => getData(validUrl))
           .then((rss) => {
             const parsedRss = parse(rss.data.contents);
             addRss(parsedRss, url);
-            initialState.form.error = '';
+            watchedState.form.error = '';
             watchedState.form.status = 'finished';
           }).catch((err) => {
-            initialState.form.error = err.type ?? err.message.toLowerCase();
+            watchedState.form.error = err.type ?? err.message.toLowerCase();
             watchedState.form.status = 'failed';
           });
       });
 
       elements.postsContainer.addEventListener('click', (event) => {
         const { id } = event.target.dataset;
-        watchedState.idCurrentOpenWindow = id;
+        watchedState.modalPostId = id;
         watchedState.postsVisits.push(id);
       });
     });

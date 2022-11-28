@@ -12,15 +12,15 @@ const parse = (data) => {
   const posts = [];
   const postsEl = doc.querySelectorAll('item');
   postsEl.forEach((post) => {
-    const postTitle = post.querySelector('title').textContent;
-    const postDescr = post.querySelector('description').textContent;
-    const postLink = post.querySelector('link').textContent;
-    posts.push({ postTitle, postDescr, postLink });
+    const title = post.querySelector('title').textContent;
+    const description = post.querySelector('description').textContent;
+    const link = post.querySelector('link').textContent;
+    posts.push({ title, description, link });
   });
 
   return {
     feed: {
-      feedTitle, feedDescr,
+      title: feedTitle, description: feedDescr,
     },
     posts,
   };

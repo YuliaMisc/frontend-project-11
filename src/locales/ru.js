@@ -3,12 +3,12 @@ export default {
     translation: {
       feedback: {
         success: 'RSS успешно загружен',
-        invalidUrl: 'Ссылка должна быть валидным URL',
-        invalidRequired: 'Не должно быть пустым',
-        invalidNotOneOf: 'RSS уже существует',
+        url: 'Ссылка должна быть валидным URL',
+        required: 'Не должно быть пустым',
+        notOneOf: 'RSS уже существует',
         invalidUnknown: 'Возникла неизвестная ошибка. Попробуйте еще раз',
-        invalidRSS: 'Ресурс не содержит валидный RSS',
-        invalidNetwork: 'Ошибка сети',
+        'invalid rss': 'Ресурс не содержит валидный RSS',
+        'network error': 'Ошибка сети',
       },
       modal: {
         read: 'Читать полностью',
