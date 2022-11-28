@@ -5,7 +5,7 @@ import renderModalContent from './renderModalContent.js';
 export default (state, elements, i18n) => (path) => {
   switch (path) {
     case 'form.status':
-    case 'form.error':  
+    case 'form.error':
       renderForm(state, elements, i18n);
       break;
     case 'modalPostId':
